@@ -1,0 +1,194 @@
+# TRESS
+#include <stdio.h>
+#include <stdlib.h>
+struct node
+{
+    int data;
+    struct node *lnode ;
+    struct node *rnode ;
+};
+ struct node *newnode ;
+
+struct node *getnode(int key){
+    newnode = (struct node *)malloc(sizeof(struct node));
+    newnode->data = key;
+    newnode->lnode = NULL ;
+    newnode->rnode = NULL;
+    return newnode;
+};
+
+void inorder(struct node *root)
+{
+    if(root == NULL){
+        return ;
+    }
+
+    inorder(root->lnode);
+    printf("\n%d\n",root->data);
+    inorder(root->rnode);
+
+}
+int min(struct node *root)
+{
+    if(root->lnode==NULL)
+    {
+        root=root->data;
+    }
+    return min(root->lnode);
+}
+
+
+
+int findmax(struct node *root)
+{
+     if(root->rnode==NULL)
+    {
+       return root->data;
+    }
+    return findmax(root->rnode);
+
+
+}
+
+struct node *createTree(struct node *root, int key){
+    if(root == NULL){
+        root = getnode(key);
+        return root ;
+    }
+    else if(root->data < key){
+        root->rnode = createTree(root->rnode, key);
+        return root ;
+    }
+    else if(root->data > key){
+        root->lnode = createTree(root->lnode, key);
+        return root;
+    }
+}
+
+//T(n)=2T(n/2)
+void searchnode(struct node *root, int key)
+{
+
+    if(root==NULL)
+    {
+        printf("key not found\n");
+        return ;
+    }
+    else if(root->data ==key)
+    {
+        printf("key found\n");
+        return ;
+    }
+    else if(root->data < key){
+        searchnode(root->rnode, key);
+        return ;
+    }
+    else if(root->data > key){
+       searchnode(root->lnode, key);
+        return ;
+    }
+
+};
+
+struct node *delnode(struct node *root, int key)
+{
+
+    if(root==NULL)
+    {
+
+        return ;
+    }
+
+
+
+     if(root->data < key){
+        root->rnode=delnode(root->rnode, key);
+        return ;
+    }
+     if(root->data > key){
+       root->lnode=delnode(root->lnode, key);
+        return ;
+    }
+
+          if(root->rnode==NULL && root->lnode == NULL)
+       {
+           printf("root del=%d",root->data);
+           free(root);
+           return NULL;
+       }
+       if(root->rnode==NULL && root->lnode != NULL)
+       {
+           struct node *temp;
+           temp=root->lnode;
+           free(root);
+           return temp;
+       }
+       if(root->rnode!=NULL && root->lnode == NULL)
+       {
+           struct node *temp;
+           temp=root->rnode;
+           free(root);
+           return temp;
+       }
+        if(root->rnode!=NULL && root->lnode != NULL)
+        {
+            int max,temp;
+            max=findmax(root->lnode);
+            root->data=max;
+            root->lnode=delnode(root->lnode,max);
+            return root;
+        }
+
+
+
+
+
+
+};
+
+int main(){
+    int x,n;
+    int z;
+    struct node *root = NULL ;
+   while(1)
+   {
+       printf("1.ENTER DATA\n");
+       printf("2.SERCH DATA\n");
+       printf("3.Inorder\n");
+       printf("4.min\n");
+       printf("5.max\n");
+       printf("6.del\n");
+       scanf("%d",&x);
+       switch(x)
+       {
+           case 1 :
+                    printf("ENTER VALUE:");
+                    scanf("%d",&n);
+                    root = createTree(root , n);
+                    break ;
+           case 2 :
+            printf("Enter the data you r searching for\n");
+            scanf("%d",&n);
+            searchnode(root, n);
+               break;
+           case 3 :
+            inorder(root);
+            break;
+           case 4 :
+             min(root);
+
+             break;
+           case 5 :
+              findmax(root);
+              break;
+           case 6 :
+            printf("Enter the data to del\n");
+            scanf("%d",&n);
+            delnode(root, n);
+            break;
+
+       }
+   }
+
+}
+
